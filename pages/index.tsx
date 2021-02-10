@@ -22,8 +22,10 @@ const options = [
 export default function Home() {
   const [wins, setWins] = useState(0);
   const [losses, setLosses] = useState(0);
+  const [draws, setDraws] = useState(0);
   const [playerSelect, setPlayerSelect] = useState(null);
   const [computerSelect, setComputerSelect] = useState(null);
+  const [bothPlayersSelected, setBothPlayersSelected] = useState(false);
 
   useEffect(() => {
     if (
@@ -37,6 +39,11 @@ export default function Home() {
       playerSelect?.losesTo === computerSelect?.name
     ) {
       setLosses(losses => losses + 1);
+    } else if (
+      playerSelect !== null &&
+      playerSelect?.name === computerSelect?.name
+    ) {
+      setDraws(draws => draws + 1);
     }
   }, [playerSelect, computerSelect]);
 
@@ -45,6 +52,13 @@ export default function Home() {
     setComputerSelect(randomChoice);
     const optionClicked = options.find(o => o.id === choice);
     setPlayerSelect(optionClicked);
+    setBothPlayersSelected(true);
+  };
+
+  const handleReset = () => {
+    setBothPlayersSelected(false);
+    setComputerSelect(null);
+    setPlayerSelect(null);
   };
 
   return (
@@ -59,6 +73,7 @@ export default function Home() {
           <div className='scoreboard'>
             <h3 className='scoreboard-result'>Wins {wins}</h3>
             <h3 className='scoreboard-result'>Losses {losses}</h3>
+            <h3 className='scoreboard-result'>Draws {draws}</h3>
           </div>
           <div className='game-display'>
             <h2>Choose your hand</h2>
@@ -68,13 +83,17 @@ export default function Home() {
             </p>
           </div>
           <div className='buttons'>
-            {options.map(option => (
-              <button
-                onClick={() => handleSelection(option.id)}
-                key={option.id}>
-                {option.name}
-              </button>
-            ))}
+            {bothPlayersSelected === false ? (
+              options.map(option => (
+                <button
+                  onClick={() => handleSelection(option.id)}
+                  key={option.id}>
+                  {option.name}
+                </button>
+              ))
+            ) : (
+              <button onClick={handleReset}>Play Again</button>
+            )}
           </div>
         </main>
       </div>
